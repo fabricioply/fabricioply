@@ -1,5 +1,5 @@
 # Hi there, I'm Fabricio 👋
-## 👾 Python Developer | Web & Mobile Creator
+## 👾 Python Developer | Web & Mobile Creator | Vexel GameOps Creator
 
 <div align="center">
     <a href="https://fabricioply.github.io/fabricioply/">
@@ -12,8 +12,8 @@
 
 ---
 
-### �️ Tech Stack
-Minhas ferramentas principais de desenvolvimento:
+### Tech Stack
+My main development tools:
 
 <div align="center">
   <!-- Core Languages -->
@@ -25,18 +25,24 @@ Minhas ferramentas principais de desenvolvimento:
 
 ---
 
-### 📊 GitHub Stats
+### � Featured Projects
+
+#### 🎮 [Vexel.work](https://vexel.work)
+> **GameOps Platform**
+> Um site para GameOps que ajuda no desenvolvimento de jogos, contendo diversas formas de organizar tarefas, concept arts, modelos 3D, história, votações e muito mais!
+
+#### 🍿 [Swipie](https://swipie.com.br)
+> **Movie Matcher Party**
+> Um aplicativo estilo "Tinder" para filmes, onde um grupo faz uma party e dá match em um filme para decidir o que assistir.
+> *📱 Status: iOS (Web) & Android (Beta Fechado)*
+
+---
+
+### �📊 GitHub Stats
 
 <div align="center">
   <img src="https://github-readme-stats.vercel.app/api?username=fabricioply&show_icons=true&theme=tokyonight&hide_border=true&count_private=true" height="150" alt="Stats" />
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=fabricioply&layout=compact&theme=tokyonight&hide_border=true&langs_count=4" height="150" alt="Languages" />
-</div>
-
----
-
-### 🐍 Contribution Snake
-<div align="center">
-  <img src="https://github.com/fabricioply/fabricioply/blob/output/github-contribution-grid-snake.svg" alt="snake" />
 </div>
 
 ---
