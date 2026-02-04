@@ -28,7 +28,6 @@ jobs:
           git diff --quiet && git diff --staged --quiet || (git commit -m "docs: update daily quote" && git push)
 
   generate-snake:
-    needs: update-readme
     runs-on: ubuntu-latest
     timeout-minutes: 10
     

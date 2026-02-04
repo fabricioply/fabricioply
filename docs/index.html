@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bug Shooter - Fabricio's Portfolio</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #0d1117; color: #fff; font-family: 'Courier New', Courier, monospace; }
+        canvas { display: block; }
+        #ui { position: absolute; top: 20px; left: 20px; pointer-events: none; }
+        #game-over { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: auto; background: rgba(0,0,0,0.8); padding: 20px; border-radius: 10px; border: 1px solid #58a6ff; }
+        button { background: #238636; color: white; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px; margin-top: 10px; }
+        button:hover { background: #2ea043; }
+        a { color: #58a6ff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <h1>Bug Shooter 🔫</h1>
+        <p>Score: <span id="score">0</span></p>
+        <p>Use Mouse to Move & Click to Shoot!</p>
+    </div>
+    
+    <div id="game-over">
+        <h2>GAME OVER</h2>
+        <p>Final Score: <span id="final-score">0</span></p>
+        <button onclick="restartGame()">Try Again</button>
+        <br><br>
+        <a href="https://github.com/fabricioply">Back to GitHub Profile</a>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        const gameOverEl = document.getElementById('game-over');
+        const finalScoreEl = document.getElementById('final-score');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let score = 0;
+        let gameRunning = true;
+        let player = { x: canvas.width / 2, y: canvas.height / 2, size: 20, color: '#58a6ff' };
+        let bullets = [];
+        let enemies = [];
+        let particles = [];
+        
+        // Mouse position
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height / 2;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        window.addEventListener('mousedown', () => {
+            if (gameRunning) {
+                // Shoot bullet towards mouse
+                const angle = Math.atan2(mouseY - player.y, mouseX - player.x);
+                const velocity = {
+                    x: Math.cos(angle) * 8,
+                    y: Math.sin(angle) * 8
+                };
+                bullets.push({ x: player.x, y: player.y, radius: 5, color: '#fff', velocity: velocity });
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        function spawnEnemy() {
+            if (!gameRunning) return;
+            const radius = Math.random() * (30 - 10) + 10;
+            let x, y;
+            if (Math.random() < 0.5) {
+                x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
+                y = Math.random() * canvas.height;
+            } else {
+                x = Math.random() * canvas.width;
+                y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
+            }
+            const color = `hsl(${Math.random() * 360}, 50%, 50%)`;
+            const angle = Math.atan2(player.y - y, player.x - x);
+            const velocity = {
+                x: Math.cos(angle),
+                y: Math.sin(angle)
+            };
+            enemies.push({ x, y, radius, color, velocity });
+            
+            setTimeout(spawnEnemy, 1000 - Math.min(score * 5, 800)); // Gets harder
+        }
+
+        function restartGame() {
+            score = 0;
+            scoreEl.innerText = score;
+            bullets = [];
+            enemies = [];
+            particles = [];
+            gameRunning = true;
+            gameOverEl.style.display = 'none';
+            player.x = canvas.width / 2;
+            player.y = canvas.height / 2;
+            animate();
+            spawnEnemy();
+        }
+
+        const friction = 0.98;
+        function animate() {
+            if (!gameRunning) return;
+            requestAnimationFrame(animate);
+            ctx.fillStyle = 'rgba(13, 17, 23, 0.2)'; // Trail effect
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Move Player (Smoothly follow mouse with some lag for feel)
+            player.x += (mouseX - player.x) * 0.05;
+            player.y += (mouseY - player.y) * 0.05;
+            
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2, false);
+            ctx.fillStyle = player.color;
+            ctx.fill();
+
+            // Particles
+            particles.forEach((particle, index) => {
+                if (particle.alpha <= 0) {
+                    particles.splice(index, 1);
+                } else {
+                    particle.velocity.x *= friction;
+                    particle.velocity.y *= friction;
+                    particle.x += particle.velocity.x;
+                    particle.y += particle.velocity.y;
+                    particle.alpha -= 0.01;
+                    ctx.save();
+                    ctx.globalAlpha = particle.alpha;
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2, false);
+                    ctx.fillStyle = particle.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            });
+
+            // Bullets
+            bullets.forEach((bullet, index) => {
+                bullet.x += bullet.velocity.x;
+                bullet.y += bullet.velocity.y;
+                
+                // Remove off-screen bullets
+                if (bullet.x + bullet.radius < 0 || bullet.x - bullet.radius > canvas.width ||
+                    bullet.y + bullet.radius < 0 || bullet.y - bullet.radius > canvas.height) {
+                    bullets.splice(index, 1);
+                }
+
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, bullet.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = bullet.color;
+                ctx.fill();
+            });
+
+            // Enemies
+            enemies.forEach((enemy, index) => {
+                // Update enemy velocity to track player (simple AI)
+                const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+                enemy.velocity.x = Math.cos(angle) * (1 + score * 0.01);
+                enemy.velocity.y = Math.sin(angle) * (1 + score * 0.01);
+
+                enemy.x += enemy.velocity.x;
+                enemy.y += enemy.velocity.y;
+
+                // Collision with Player
+                const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+                if (dist - enemy.radius - player.size < 1) {
+                    gameRunning = false;
+                    gameOverEl.style.display = 'block';
+                    finalScoreEl.innerText = score;
+                }
+
+                // Collision with Bullets
+                bullets.forEach((bullet, bulletIndex) => {
+                    const dist = Math.hypot(bullet.x - enemy.x, bullet.y - enemy.y);
+                    if (dist - enemy.radius - bullet.radius < 1) {
+                        // Create explosion
+                        for (let i = 0; i < enemy.radius * 2; i++) {
+                            particles.push({
+                                x: bullet.x,
+                                y: bullet.y,
+                                radius: Math.random() * 2,
+                                color: enemy.color,
+                                velocity: {
+                                    x: (Math.random() - 0.5) * (Math.random() * 6),
+                                    y: (Math.random() - 0.5) * (Math.random() * 6)
+                                },
+                                alpha: 1
+                            });
+                        }
+
+                        setTimeout(() => {
+                            enemies.splice(index, 1);
+                            bullets.splice(bulletIndex, 1);
+                            score += 10;
+                            scoreEl.innerText = score;
+                        }, 0);
+                    }
+                });
+
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = enemy.color;
+                ctx.fill();
+            });
+        }
+
+        spawnEnemy();
+        animate();
+    </script>
+</body>
+</html>
