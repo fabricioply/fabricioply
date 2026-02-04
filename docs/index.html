@@ -200,6 +200,56 @@
             margin: 0 0 20px 0;
         }
 
+        .leaderboard-title {
+            font-size: 18px;
+            color: #0ff;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #0ff;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .leaderboard-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .leaderboard-input {
+            margin-top: 12px;
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .leaderboard-input::placeholder {
+            color: #777;
+        }
+
+        .leaderboard-submit {
+            margin-top: 12px;
+            width: 100%;
+            padding: 12px 0;
+            font-size: 14px;
+        }
+
         button { 
             background: linear-gradient(45deg, #00ffff, #0088ff); 
             color: #000; 
@@ -272,6 +322,10 @@
         <h2>SYSTEM FAILURE</h2>
         <p>BUGS OVERWHELMED THE SYSTEM</p>
         <h3 style="font-size: 32px; margin: 20px 0;">SCORE: <span id="final-score">0</span></h3>
+        <div class="leaderboard-title">LEADERBOARD</div>
+        <ul id="leaderboard" class="leaderboard-list"></ul>
+        <input id="leaderboard-name" class="leaderboard-input" type="text" maxlength="16" placeholder="Seu nome" disabled />
+        <button id="leaderboard-submit" class="leaderboard-submit" disabled>SALVAR</button>
         <button onclick="restartGame()">REBOOT SYSTEM</button>
         <br>
         <a href="https://github.com/fabricioply" class="back-link">Return to GitHub Profile</a>
@@ -285,6 +339,9 @@
         const scoreEl = document.getElementById('score');
         const gameOverEl = document.getElementById('game-over');
         const finalScoreEl = document.getElementById('final-score');
+        const leaderboardEl = document.getElementById('leaderboard');
+        const leaderboardNameInput = document.getElementById('leaderboard-name');
+        const leaderboardSubmitBtn = document.getElementById('leaderboard-submit');
         const levelEl = document.getElementById('level-display');
         const progressFill = document.getElementById('progress-bar-fill');
         const upgradeModal = document.getElementById('upgrade-modal');
@@ -294,6 +351,26 @@
         const deployContainer = document.getElementById('deploy-bar-container');
         const deployFill = document.getElementById('deploy-bar-fill');
         const deployStatus = document.getElementById('deploy-status');
+
+        // Game Configuration for Entity Groups
+        const GAME_CONFIG = {
+            player: {
+                speed: 7.0, // Fastest to outmaneuver
+            },
+            bots: {
+                chaseSpeed: 4,
+                wanderSpeed: 2.2,
+                wanderChangeInterval: 1.2,
+                fireCooldown: 0.5,
+                minDistance: 18
+            },
+            enemies: {
+                baseMinSpeed: 2,
+                baseMaxSpeed: 4,
+                speedGrowth: 0.05, // Slower progression per level (User requested 0.05)
+                maxSpeedCap: 5.0
+            }
+        };
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -305,6 +382,11 @@
         let xpToNextLevel = 100;
         let gameRunning = true;
         let isPaused = false;
+        let lastFrameTime = null;
+        let animationId = null;
+        let botIdCounter = 1;
+        let leaderboard = [];
+        let pendingScore = null;
         
         // Entities
         let player = { 
@@ -384,6 +466,16 @@
             }
         ];
 
+        const BOT_UPGRADES = [
+            { id: 'fireRate', apply: (d) => d.stats.fireCooldown = Math.max(0.15, d.stats.fireCooldown * 0.85) },
+            { id: 'damage', apply: (d) => d.stats.damage = Math.min(2, d.stats.damage + 0.2) },
+            { id: 'speed', apply: (d) => d.stats.chaseSpeed = Math.min(7, d.stats.chaseSpeed + 0.4) },
+            { id: 'bulletSpeed', apply: (d) => d.stats.projectileSpeed = Math.min(14, d.stats.projectileSpeed + 0.8) },
+            { id: 'range', apply: (d) => d.stats.attackRange = Math.min(700, d.stats.attackRange + 40) }
+        ];
+
+        const LEADERBOARD_KEY = 'bugShooterLeaderboard';
+
         // Input
         let mouseX = canvas.width / 2;
         let mouseY = canvas.height / 2;
@@ -398,6 +490,13 @@
                 alpha: Math.random()
             });
         }
+
+        loadLeaderboard();
+
+        leaderboardSubmitBtn.addEventListener('click', submitLeaderboardName);
+        leaderboardNameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') submitLeaderboardName();
+        });
 
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
@@ -430,7 +529,8 @@
                     radius: 4, 
                     color: '#ff00ff', 
                     velocity: velocity,
-                    life: 100
+                    life: 100,
+                    damage: 1
                 });
             }
 
@@ -486,9 +586,8 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             // Status Text Effect (Temporary)
-            const textEffect = { x: player.x, y: player.y - 50, text: 'DEPLOY SUCCESSFUL!', life: 60 };
-            particles.push(textEffect); // Hack: push to particles array? particles are objects with draw logic. 
-            // Better to handle text separately or just use a simple flag for animate loop.
+            // Removed text effect to prevent crash (particles array expects physics objects)
+            
             // Let's just create a huge explosion at center
             createExplosion(canvas.width/2, canvas.height/2, '#ffffff', 100);
         }
@@ -521,24 +620,41 @@
             enemies.push({ 
                 x, y, radius, color, 
                 velocity: { x: 0, y: 0 },
-                speed: Math.random() * (0.5 + (level * 0.1)) + 1,
+                // Speed increases based on config
+                speed: Math.min(
+                    (Math.random() * (GAME_CONFIG.enemies.baseMaxSpeed - GAME_CONFIG.enemies.baseMinSpeed) + GAME_CONFIG.enemies.baseMinSpeed) + (level * GAME_CONFIG.enemies.speedGrowth),
+                    GAME_CONFIG.enemies.maxSpeedCap
+                ),
                 health: 1 + Math.floor(level / 2)
             });
             
-            // Spawn rate based on level
-            const spawnRate = Math.max(400, 1000 - (level * 100));
+            // Spawn rate based on level (Slower increase)
+            const spawnRate = Math.max(500, 1000 - (level * 20));
             setTimeout(spawnEnemy, spawnRate);
         }
 
         function spawnIADrone() {
             iaDrones.push({
+                id: botIdCounter++,
                 x: player.x,
                 y: player.y,
                 size: 10,
                 color: '#00ff00',
                 angle: 0,
                 target: null,
-                cooldown: 0
+                cooldown: 0,
+                wanderAngle: Math.random() * Math.PI * 2,
+                wanderTimer: 0,
+                level: 1,
+                xp: 0,
+                xpToNext: 25,
+                stats: {
+                    fireCooldown: GAME_CONFIG.bots.fireCooldown,
+                    damage: 0.3,
+                    chaseSpeed: GAME_CONFIG.bots.chaseSpeed,
+                    projectileSpeed: 8,
+                    attackRange: 420
+                }
             });
         }
 
@@ -556,6 +672,74 @@
                     alpha: 1,
                     decay: Math.random() * 0.02 + 0.01
                 });
+            }
+        }
+
+        function loadLeaderboard() {
+            const saved = localStorage.getItem(LEADERBOARD_KEY);
+            leaderboard = saved ? JSON.parse(saved) : [];
+            renderLeaderboard();
+        }
+
+        function saveLeaderboard() {
+            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard));
+        }
+
+        function renderLeaderboard() {
+            leaderboardEl.innerHTML = '';
+            leaderboard.slice(0, 10).forEach((entry, index) => {
+                const li = document.createElement('li');
+                const nameSpan = document.createElement('span');
+                const scoreSpan = document.createElement('span');
+                nameSpan.textContent = `${index + 1}. ${entry.name}`;
+                scoreSpan.textContent = entry.score;
+                li.appendChild(nameSpan);
+                li.appendChild(scoreSpan);
+                leaderboardEl.appendChild(li);
+            });
+        }
+
+        function addToLeaderboard(name, points) {
+            leaderboard.push({ name, score: points });
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 10);
+            saveLeaderboard();
+            renderLeaderboard();
+        }
+
+        function submitLeaderboardName() {
+            if (pendingScore === null) return;
+            const rawName = leaderboardNameInput.value.trim();
+            const name = rawName.length ? rawName.slice(0, 16) : 'PLAYER';
+            addToLeaderboard(name, pendingScore);
+            pendingScore = null;
+            leaderboardNameInput.value = '';
+            leaderboardNameInput.disabled = true;
+            leaderboardSubmitBtn.disabled = true;
+        }
+
+        function handleGameOver() {
+            if (!gameRunning) return;
+            gameRunning = false;
+            finalScoreEl.innerText = score;
+            gameOverEl.style.display = 'block';
+            pendingScore = score;
+            leaderboardNameInput.disabled = false;
+            leaderboardSubmitBtn.disabled = false;
+            leaderboardNameInput.value = '';
+            leaderboardNameInput.focus();
+        }
+
+        function grantBotXp(botId, amount) {
+            const drone = iaDrones.find(d => d.id === botId);
+            if (!drone) return;
+            drone.xp += amount;
+            while (drone.xp >= drone.xpToNext) {
+                drone.xp -= drone.xpToNext;
+                drone.level += 1;
+                drone.xpToNext = Math.floor(drone.xpToNext * 1.25);
+                const upgrade = BOT_UPGRADES[Math.floor(Math.random() * BOT_UPGRADES.length)];
+                upgrade.apply(drone);
             }
         }
 
@@ -621,7 +805,6 @@
             upgrade.apply(player);
             upgradeModal.style.display = 'none';
             isPaused = false;
-            animate(); 
         }
 
         function restartGame() {
@@ -658,8 +841,12 @@
             isPaused = false;
             gameOverEl.style.display = 'none';
             upgradeModal.style.display = 'none';
+            pendingScore = null;
+            leaderboardNameInput.value = '';
+            leaderboardNameInput.disabled = true;
+            leaderboardSubmitBtn.disabled = true;
             
-            animate();
+            startLoop();
             spawnEnemy();
         }
 
@@ -683,14 +870,25 @@
             }
         }
 
-        function animate() {
-            if (!gameRunning) return;
-            if (isPaused) {
-                requestAnimationFrame(animate);
+        function startLoop() {
+            if (animationId !== null) return;
+            lastFrameTime = null;
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        function animate(timestamp) {
+            if (!gameRunning) {
+                animationId = null;
                 return;
             }
             
-            requestAnimationFrame(animate);
+            if (lastFrameTime === null) lastFrameTime = timestamp;
+            const deltaSeconds = Math.min(0.05, (timestamp - lastFrameTime) / 1000);
+            lastFrameTime = timestamp;
+            const frameScalar = deltaSeconds * 60;
+            
+            animationId = requestAnimationFrame(animate);
+            if (isPaused) return;
             
             // Clear
             ctx.fillStyle = 'rgba(5, 5, 10, 0.3)';
@@ -709,10 +907,17 @@
 
             // Player Logic
             // Move
-            if (keys['w'] || keys['arrowup']) player.y -= 4;
-            if (keys['s'] || keys['arrowdown']) player.y += 4;
-            if (keys['a'] || keys['arrowleft']) player.x -= 4;
-            if (keys['d'] || keys['arrowright']) player.x += 4;
+            let moveX = 0;
+            let moveY = 0;
+            if (keys['w'] || keys['arrowup']) moveY -= 1;
+            if (keys['s'] || keys['arrowdown']) moveY += 1;
+            if (keys['a'] || keys['arrowleft']) moveX -= 1;
+            if (keys['d'] || keys['arrowright']) moveX += 1;
+            if (moveX !== 0 || moveY !== 0) {
+                const length = Math.hypot(moveX, moveY);
+                player.x += (moveX / length) * GAME_CONFIG.player.speed * frameScalar;
+                player.y += (moveY / length) * GAME_CONFIG.player.speed * frameScalar;
+            }
             player.x = Math.max(player.size, Math.min(canvas.width - player.size, player.x));
             player.y = Math.max(player.size, Math.min(canvas.height - player.size, player.y));
             
@@ -774,7 +979,6 @@
 
             // IA Squad (Auto-Scaler) Logic
             iaDrones.forEach(drone => {
-                // Find nearest enemy
                 let nearest = null;
                 let minDst = Infinity;
                 enemies.forEach(e => {
@@ -782,35 +986,45 @@
                     if (d < minDst) { minDst = d; nearest = e; }
                 });
 
-                // Move randomly or towards nearest
-                if (nearest && minDst > 150) {
+                if (nearest) {
                     const angle = Math.atan2(nearest.y - drone.y, nearest.x - drone.x);
-                    drone.x += Math.cos(angle) * 2;
-                    drone.y += Math.sin(angle) * 2;
+                    const desiredDistance = nearest.radius + drone.size + GAME_CONFIG.bots.minDistance;
+                    if (minDst > desiredDistance) {
+                        drone.x += Math.cos(angle) * drone.stats.chaseSpeed * frameScalar;
+                        drone.y += Math.sin(angle) * drone.stats.chaseSpeed * frameScalar;
+                    } else if (minDst < desiredDistance * 0.9) {
+                        drone.x -= Math.cos(angle) * drone.stats.chaseSpeed * 0.8 * frameScalar;
+                        drone.y -= Math.sin(angle) * drone.stats.chaseSpeed * 0.8 * frameScalar;
+                    }
                     drone.angle = angle;
                 } else {
-                    // Hover around player if no enemy
-                    const dToPlayer = Math.hypot(player.x - drone.x, player.y - drone.y);
-                    if (dToPlayer > 100) {
-                         const angle = Math.atan2(player.y - drone.y, player.x - drone.x);
-                         drone.x += Math.cos(angle) * 2.5;
-                         drone.y += Math.sin(angle) * 2.5;
+                    drone.wanderTimer -= deltaSeconds;
+                    if (drone.wanderTimer <= 0) {
+                        drone.wanderAngle = Math.random() * Math.PI * 2;
+                        drone.wanderTimer = GAME_CONFIG.bots.wanderChangeInterval;
                     }
+                    drone.x += Math.cos(drone.wanderAngle) * GAME_CONFIG.bots.wanderSpeed * frameScalar;
+                    drone.y += Math.sin(drone.wanderAngle) * GAME_CONFIG.bots.wanderSpeed * frameScalar;
+                    drone.angle = drone.wanderAngle;
                 }
 
-                // Shoot
-                if (nearest && drone.cooldown <= 0) {
+                drone.x = Math.max(0, Math.min(canvas.width, drone.x));
+                drone.y = Math.max(0, Math.min(canvas.height, drone.y));
+
+                if (nearest && minDst <= drone.stats.attackRange && drone.cooldown <= 0) {
                     const angle = Math.atan2(nearest.y - drone.y, nearest.x - drone.x);
                     bullets.push({
                         x: drone.x, y: drone.y, radius: 3, color: '#00ff00',
-                        velocity: { x: Math.cos(angle)*8, y: Math.sin(angle)*8 },
-                        life: 60
+                        velocity: { x: Math.cos(angle) * drone.stats.projectileSpeed, y: Math.sin(angle) * drone.stats.projectileSpeed },
+                        life: 60,
+                        damage: drone.stats.damage,
+                        ownerType: 'bot',
+                        ownerId: drone.id
                     });
-                    drone.cooldown = 60; // 1 sec fire rate
+                    drone.cooldown = drone.stats.fireCooldown;
                 }
-                if (drone.cooldown > 0) drone.cooldown--;
+                if (drone.cooldown > 0) drone.cooldown -= deltaSeconds;
 
-                // Draw Drone
                 ctx.save();
                 ctx.translate(drone.x, drone.y);
                 ctx.rotate(drone.angle);
@@ -823,9 +1037,9 @@
 
             // Particles
             particles.forEach((p, i) => {
-                p.x += p.velocity.x;
-                p.y += p.velocity.y;
-                p.alpha -= p.decay;
+                p.x += p.velocity.x * frameScalar;
+                p.y += p.velocity.y * frameScalar;
+                p.alpha -= p.decay * frameScalar;
                 if (p.alpha <= 0) particles.splice(i, 1);
                 else {
                     ctx.save();
@@ -840,9 +1054,9 @@
 
             // Bullets
             bullets.forEach((b, i) => {
-                b.x += b.velocity.x;
-                b.y += b.velocity.y;
-                b.life--;
+                b.x += b.velocity.x * frameScalar;
+                b.y += b.velocity.y * frameScalar;
+                b.life -= frameScalar;
                 if (b.life <= 0 || b.x < 0 || b.x > canvas.width || b.y < 0 || b.y > canvas.height) {
                     bullets.splice(i, 1);
                     return;
@@ -858,8 +1072,8 @@
                 const angle = Math.atan2(player.y - e.y, player.x - e.x);
                 e.velocity.x = Math.cos(angle) * e.speed;
                 e.velocity.y = Math.sin(angle) * e.speed;
-                e.x += e.velocity.x;
-                e.y += e.velocity.y;
+                e.x += e.velocity.x * frameScalar;
+                e.y += e.velocity.y * frameScalar;
 
                 // Collision Player
                 const distPlayer = Math.hypot(player.x - e.x, player.y - e.y);
@@ -872,9 +1086,7 @@
                         e.y -= e.velocity.y * 20;
                     } else {
                         createExplosion(player.x, player.y, player.color, 30);
-                        gameRunning = false;
-                        gameOverEl.style.display = 'block';
-                        finalScoreEl.innerText = score;
+                        handleGameOver();
                     }
                 }
 
@@ -882,7 +1094,7 @@
                 bullets.forEach((b, bi) => {
                     const distBullet = Math.hypot(b.x - e.x, b.y - e.y);
                     if (distBullet - e.radius - b.radius < 0) {
-                        e.health--;
+                        e.health -= (b.damage || 1);
                         createExplosion(b.x, b.y, b.color, 3);
                         bullets.splice(bi, 1);
                         if (e.health <= 0) {
@@ -890,6 +1102,9 @@
                             enemies.splice(i, 1);
                             score += 10 * level;
                             xp += 10;
+                            if (b.ownerType === 'bot' && b.ownerId) {
+                                grantBotXp(b.ownerId, 10);
+                            }
                             
                             // Charge Deploy
                             if (player.stats.hasDeployUpgrade && player.stats.deployCharge < player.stats.deployMaxCharge) {
@@ -952,7 +1167,7 @@
         });
 
         // Start Game
-        animate();
+        startLoop();
         spawnEnemy();
 
     </script>
