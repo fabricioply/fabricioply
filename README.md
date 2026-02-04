@@ -1,35 +1,78 @@
-- 👋 Hi, I’m @fabricioply
-- 👀 I’m interested in games, computer programming and geek universe
-- 🌱 Python developer and AI lover
-- 💞️ I’m looking to collaborate on everything you need
-- 📫 How to reach me: fabriciodgalvao@gmail.com or www.twitch.tv/fabricioply
+<div align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=32&pause=1000&color=F7F7F7&center=true&vCenter=true&width=435&lines=Hi%2C+I'm+Fabricio+Galv%C3%A3o;Python+Developer;Web+%26+Mobile+Enthusiast;Building+Cool+Stuff" alt="Typing SVG" />
+</div>
+
+<div align="center">
+  
+  <a href="https://github.com/fabricioply">
+    <img src="https://img.shields.io/github/followers/fabricioply?label=Followers&style=social" alt="GitHub Followers" />
+  </a>
+  <a href="https://twitter.com/fabricioply">
+    <img src="https://img.shields.io/twitter/follow/fabricioply?label=Follow&style=social" alt="Twitter Follow" />
+  </a>
+
+</div>
+
+<br />
+
+### 👨‍💻 About Me
+
+- 🔭 I’m currently working on **Web & Mobile Applications**.
+- 🌱 My main stack is **Python**, but I love exploring **JavaScript/TypeScript** and **Java**.
+- 🎮 Interested in **Game Development**, **AI**, and the **Geek Universe**.
+- 👯 I’m looking to collaborate on open source projects.
+- 📫 Reach me at: **fabriciodgalvao@gmail.com**
+
+---
+
+<!-- START_SECTION:quote -->
+> 💡 **Daily Wisdom:** Talk is cheap. Show me the code. - Linus Torvalds
+<!-- END_SECTION:quote -->
+
+---
+
+### 🚀 Tech Stack
+
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=python,js,ts,java,html,css,react,django,flask,mysql,postgres,docker,git,vscode&perline=7" />
+</div>
+
+<br />
+
+### 📊 GitHub Stats
 
 <div align="center">
   <a href="https://github.com/fabricioply">
-  <img height="180em" src="https://github-readme-stats.vercel.app/api?username=fabricioply&show_icons=true&theme=midnight-purple&include_all_commits=true&count_private=true"/>
-  <img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=fabricioply&layout=compact&langs_count=7&theme=midnight-purple"/>
+    <img align="center" src="https://github-readme-stats.vercel.app/api?username=fabricioply&show_icons=true&theme=dracula&hide_border=true" alt="Fabricio's GitHub Stats" />
+  </a>
+  <a href="https://github.com/fabricioply">
+    <img align="center" src="https://github-readme-stats.vercel.app/api/top-langs/?username=fabricioply&layout=compact&theme=dracula&hide_border=true&langs_count=8" alt="Top Languages" />
+  </a>
 </div>
 
-<div style="display: inline_block"><br>
-  <img align="center" alt="Fabricio-Js" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-plain.svg">
-  <img align="center" alt="Fabricio-Ts" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-plain.svg">
-  <img align="center" alt="Fabricio-HTML" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original.svg">
-  <img align="center" alt="Fabricio-CSS" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg">
-  <img align="center" alt="Fabricio-Python" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg">
-  <img align="center" alt="Fabricio-Csharp" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/csharp/csharp-original.svg"> 
-</div>
-  
-  ##
-  <div> 
-  <a href="https://www.youtube.com/c/fabricioply" target="_blank"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" target="_blank"></a>
-  <a href="https://instagram.com/fabricioply" target="_blank"><img src="https://img.shields.io/badge/-Instagram-%23E4405F?style=for-the-badge&logo=instagram&logoColor=white" target="_blank"></a>
- 	<a href="https://www.twitch.tv/fabricioply" target="_blank"><img src="https://img.shields.io/badge/Twitch-9146FF?style=for-the-badge&logo=twitch&logoColor=white" target="_blank"></a>
-  <a href = "mailto:fabriciodgalvao@gmail.com"><img src="https://img.shields.io/badge/-Gmail-%23333?style=for-the-badge&logo=gmail&logoColor=white" target="_blank"></a>
-  <a href="https://www.linkedin.com/in/fabricio-dias-galvão-570605141/" target="_blank"><img src="https://img.shields.io/badge/-LinkedIn-%230077B5?style=for-the-badge&logo=linkedin&logoColor=white" target="_blank"></a> 
+<br />
 
- ![Snake animation](https://github.com/fabricioply/fabricioply/blob/output/github-contribution-grid-snake.svg)
+### 🐍 Contributions
+
+<div align="center">
+  <img src="https://github.com/fabricioply/fabricioply/blob/output/github-contribution-grid-snake.svg" alt="Snake Animation" width="100%" />
 </div>
-<!---
-fabricioply/fabricioply is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-You can click the Preview link to take a look at your changes.
---->
+
+<br />
+
+### 🤝 Connect with me
+
+<div align="center">
+  <a href="https://www.youtube.com/c/fabricioply" target="_blank">
+    <img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube" />
+  </a>
+  <a href="https://instagram.com/fabricioply" target="_blank">
+    <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" />
+  </a>
+  <a href="https://www.twitch.tv/fabricioply" target="_blank">
+    <img src="https://img.shields.io/badge/Twitch-9146FF?style=for-the-badge&logo=twitch&logoColor=white" alt="Twitch" />
+  </a>
+  <a href="https://www.linkedin.com/in/fabricio-dias-galvão-570605141/" target="_blank">
+    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
+  </a>
+</div>
