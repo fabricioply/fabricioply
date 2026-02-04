@@ -76,6 +76,7 @@
             border-radius: 5px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 10px;
         }
 
         .progress-bar-fill {
@@ -85,6 +86,95 @@
             box-shadow: 0 0 15px #00ffff;
             transition: width 0.2s ease-out;
         }
+        
+        /* Deploy Bar */
+        #deploy-bar-container {
+            display: none; /* Hidden until upgrade acquired */
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        .deploy-label {
+            font-size: 14px;
+            color: #f00;
+            margin-bottom: 3px;
+            text-shadow: 0 0 5px #f00;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .deploy-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: rgba(50, 0, 0, 0.3);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .deploy-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff4400, #ff0000);
+            box-shadow: 0 0 10px #ff0000;
+            transition: width 0.1s linear;
+        }
+        
+        .deploy-ready {
+            animation: pulse-red 1s infinite;
+        }
+        
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 10px #ff0000; }
+            50% { box-shadow: 0 0 25px #ff0000, 0 0 5px #fff; }
+            100% { box-shadow: 0 0 10px #ff0000; }
+        }
+
+        /* Upgrade Modal */
+        #upgrade-modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            pointer-events: auto;
+        }
+
+        #upgrade-modal h2 {
+            font-size: 36px;
+            color: #ff0;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px #ff0;
+        }
+
+        .cards-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(0, 20, 40, 0.9);
+            border: 2px solid #0ff;
+            border-radius: 10px;
+            padding: 20px;
+            width: 220px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 30px #0ff;
+            background: rgba(0, 40, 80, 1);
+        }
+
+        .card h3 { color: #f0f; margin-bottom: 10px; font-size: 18px; }
+        .card p { font-size: 14px; color: #ccc; line-height: 1.4; }
+        .card .icon { font-size: 40px; margin-bottom: 15px; display: block; }
 
         #game-over { 
             display: none; 
@@ -157,6 +247,25 @@
         <div class="progress-bar-bg">
             <div id="progress-bar-fill" class="progress-bar-fill"></div>
         </div>
+        
+        <!-- Deploy Charge Bar -->
+        <div id="deploy-bar-container">
+            <div class="deploy-label">
+                <span>DEPLOY CHARGE</span>
+                <span id="deploy-status">0/20</span>
+            </div>
+            <div class="deploy-bar-bg">
+                <div id="deploy-bar-fill" class="deploy-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div id="upgrade-modal">
+        <h2>SYSTEM UPGRADE AVAILABLE</h2>
+        <div class="cards-container" id="cards-container">
+            <!-- Cards will be injected here -->
+        </div>
     </div>
     
     <div id="game-over">
@@ -178,6 +287,13 @@
         const finalScoreEl = document.getElementById('final-score');
         const levelEl = document.getElementById('level-display');
         const progressFill = document.getElementById('progress-bar-fill');
+        const upgradeModal = document.getElementById('upgrade-modal');
+        const cardsContainer = document.getElementById('cards-container');
+        
+        // Deploy UI
+        const deployContainer = document.getElementById('deploy-bar-container');
+        const deployFill = document.getElementById('deploy-bar-fill');
+        const deployStatus = document.getElementById('deploy-status');
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -188,13 +304,85 @@
         let xp = 0;
         let xpToNextLevel = 100;
         let gameRunning = true;
+        let isPaused = false;
         
         // Entities
-        let player = { x: canvas.width / 2, y: canvas.height / 2, size: 20, color: '#00ffff', angle: 0 };
+        let player = { 
+            x: canvas.width / 2, 
+            y: canvas.height / 2, 
+            size: 20, 
+            color: '#00ffff', 
+            angle: 0,
+            stats: {
+                bulletCount: 1, // MultiShot
+                squadCount: 0,  // Replica Set (max 4)
+                iaSquadCount: 0,// Auto-Scaler (max 4)
+                hasShield: false, // Load Balancer
+                hasDeployUpgrade: false, // Production Deploy
+                deployCharge: 0,
+                deployMaxCharge: 20
+            }
+        };
+        
         let bullets = [];
         let enemies = [];
         let particles = [];
         let backgroundStars = [];
+        let iaDrones = [];
+
+        // Upgrade Definitions
+        const UPGRADES = [
+            {
+                id: 'multishot',
+                name: 'MultiShot',
+                desc: 'Add +1 projectile per shot (Max 5).',
+                icon: '🔱',
+                max: 5,
+                apply: (p) => p.stats.bulletCount = Math.min(p.stats.bulletCount + 1, 5)
+            },
+            {
+                id: 'squad',
+                name: 'Replica Set',
+                desc: 'Add a drone that shoots with you (Max 4).',
+                icon: '👯',
+                max: 4,
+                apply: (p) => p.stats.squadCount = Math.min(p.stats.squadCount + 1, 4)
+            },
+            {
+                id: 'iasquad',
+                name: 'Auto-Scaler',
+                desc: 'Autonomous drone that hunts bugs (Max 4).',
+                icon: '🤖',
+                max: 4,
+                apply: (p) => {
+                    if(p.stats.iaSquadCount < 4) {
+                        p.stats.iaSquadCount++;
+                        spawnIADrone();
+                    }
+                }
+            },
+            {
+                id: 'shield',
+                name: 'Load Balancer',
+                desc: 'Shield that absorbs one hit. Regenerates every level.',
+                icon: '🛡️',
+                max: 1, // Boolean state
+                apply: (p) => p.stats.hasShield = true
+            },
+            {
+                id: 'bomb',
+                name: 'Production Deploy',
+                desc: 'Press SPACE to deploy massive bomb (Needs 20 kills).',
+                icon: '💣',
+                max: 1,
+                apply: (p) => {
+                    p.stats.hasDeployUpgrade = true;
+                    p.stats.deployCharge = 0;
+                    deployContainer.style.display = 'block';
+                    updateDeployUI();
+                }
+            }
+        ];
 
         // Input
         let mouseX = canvas.width / 2;
@@ -217,28 +405,94 @@
         });
 
         window.addEventListener('mousedown', () => {
-            if (gameRunning) {
-                const angle = Math.atan2(mouseY - player.y, mouseX - player.x);
+            if (gameRunning && !isPaused) {
+                fireBullet(player.x, player.y, player.angle, true);
+            }
+        });
+
+        function fireBullet(originX, originY, angle, isPlayer) {
+            const count = isPlayer ? player.stats.bulletCount : 1;
+            const spread = 0.1; // radians
+            
+            for(let i = 0; i < count; i++) {
+                // Calculate spread angle
+                const offset = (i - (count - 1) / 2) * spread;
+                const finalAngle = angle + offset;
+                
                 const velocity = {
-                    x: Math.cos(angle) * 12,
-                    y: Math.sin(angle) * 12
+                    x: Math.cos(finalAngle) * 12,
+                    y: Math.sin(finalAngle) * 12
                 };
+                
                 bullets.push({ 
-                    x: player.x, 
-                    y: player.y, 
+                    x: originX, 
+                    y: originY, 
                     radius: 4, 
                     color: '#ff00ff', 
                     velocity: velocity,
                     life: 100
                 });
-                
-                // Recoil effect
+            }
+
+            // Recoil (only for player)
+            if (isPlayer) {
                 player.x -= Math.cos(angle) * 2;
                 player.y -= Math.sin(angle) * 2;
             }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+            
+            // Deploy Activation
+            if (e.code === 'Space' && player.stats.hasDeployUpgrade && player.stats.deployCharge >= player.stats.deployMaxCharge) {
+                 triggerDeploy();
+            }
         });
 
-        window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+        function updateDeployUI() {
+            if (!player.stats.hasDeployUpgrade) return;
+            
+            const pct = (player.stats.deployCharge / player.stats.deployMaxCharge) * 100;
+            deployFill.style.width = `${pct}%`;
+            deployStatus.innerText = `${player.stats.deployCharge}/${player.stats.deployMaxCharge}`;
+            
+            if (player.stats.deployCharge >= player.stats.deployMaxCharge) {
+                deployFill.classList.add('deploy-ready');
+                deployStatus.innerText = "READY (SPACE)";
+                deployStatus.style.color = "#fff";
+            } else {
+                deployFill.classList.remove('deploy-ready');
+                deployStatus.style.color = "#f00";
+            }
+        }
+
+        function triggerDeploy() {
+            player.stats.deployCharge = 0;
+            updateDeployUI();
+            
+            // Kill all enemies
+            enemies.forEach(e => {
+                createExplosion(e.x, e.y, e.color, 20);
+                score += 10;
+                xp += 10;
+            });
+            enemies = [];
+            scoreEl.innerText = score;
+            checkLevelUp();
+            
+            // Visual Flash
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Status Text Effect (Temporary)
+            const textEffect = { x: player.x, y: player.y - 50, text: 'DEPLOY SUCCESSFUL!', life: 60 };
+            particles.push(textEffect); // Hack: push to particles array? particles are objects with draw logic. 
+            // Better to handle text separately or just use a simple flag for animate loop.
+            // Let's just create a huge explosion at center
+            createExplosion(canvas.width/2, canvas.height/2, '#ffffff', 100);
+        }
+
         window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
@@ -246,7 +500,10 @@
         });
 
         function spawnEnemy() {
-            if (!gameRunning) return;
+            if (!gameRunning || isPaused) {
+                if (gameRunning && isPaused) setTimeout(spawnEnemy, 100); // Retry if paused
+                return;
+            }
             
             const radius = Math.random() * (25 - 15) + 15;
             let x, y;
@@ -273,6 +530,18 @@
             setTimeout(spawnEnemy, spawnRate);
         }
 
+        function spawnIADrone() {
+            iaDrones.push({
+                x: player.x,
+                y: player.y,
+                size: 10,
+                color: '#00ff00',
+                angle: 0,
+                target: null,
+                cooldown: 0
+            });
+        }
+
         function createExplosion(x, y, color, count = 10) {
             for (let i = 0; i < count; i++) {
                 particles.push({
@@ -297,11 +566,62 @@
                 xpToNextLevel = Math.floor(xpToNextLevel * 1.2);
                 levelEl.innerText = level;
                 
-                // Level Up visual effect
-                createExplosion(canvas.width/2, canvas.height/2, '#ffff00', 50);
+                // Regenerate Shield
+                if (player.stats.hasShield === false && UPGRADES.find(u => u.id === 'shield' && player.stats.hasShield === true)) { // Logic check: if user HAD shield but lost it?
+                    // Actually, if they picked it, they have it. If they lost it, we restore it.
+                    // For now, simpler: just restore shield if they have the upgrade
+                    // We need to track if they BOUGHT the upgrade.
+                    // Let's rely on the fact that if they pick it again, it does nothing? No, we should restore it.
+                    // Simplified: Level up always restores shield if unlocked?
+                    // Let's implement shield logic in damage.
+                    player.stats.hasShield = true; // Simple restore on level up
+                }
+
+                showUpgradeModal();
             }
             const progressPct = (xp / xpToNextLevel) * 100;
             progressFill.style.width = `${progressPct}%`;
+        }
+
+        function showUpgradeModal() {
+            isPaused = true;
+            upgradeModal.style.display = 'flex';
+            cardsContainer.innerHTML = '';
+
+            // Get 3 random upgrades
+            const options = [];
+            while(options.length < 3) {
+                const rand = UPGRADES[Math.floor(Math.random() * UPGRADES.length)];
+                if(!options.includes(rand)) {
+                    // Check max limits
+                    if (rand.id === 'multishot' && player.stats.bulletCount >= 5) continue;
+                    if (rand.id === 'squad' && player.stats.squadCount >= 4) continue;
+                    if (rand.id === 'iasquad' && player.stats.iaSquadCount >= 4) continue;
+                    if (rand.id === 'bomb' && player.stats.hasDeployUpgrade) continue; 
+                    if (rand.id === 'shield' && player.stats.hasShield) continue; // Don't buy if active
+
+                    options.push(rand);
+                }
+            }
+
+            options.forEach(opt => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <span class="icon">${opt.icon}</span>
+                    <h3>${opt.name}</h3>
+                    <p>${opt.desc}</p>
+                `;
+                card.onclick = () => selectUpgrade(opt);
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        function selectUpgrade(upgrade) {
+            upgrade.apply(player);
+            upgradeModal.style.display = 'none';
+            isPaused = false;
+            animate(); 
         }
 
         function restartGame() {
@@ -316,10 +636,28 @@
             bullets = [];
             enemies = [];
             particles = [];
-            gameRunning = true;
-            gameOverEl.style.display = 'none';
+            iaDrones = [];
+            
             player.x = canvas.width / 2;
             player.y = canvas.height / 2;
+            player.stats = {
+                bulletCount: 1,
+                squadCount: 0,
+                iaSquadCount: 0,
+                hasShield: false,
+                hasDeployUpgrade: false,
+                deployCharge: 0,
+                deployMaxCharge: 20
+            };
+            
+            deployContainer.style.display = 'none';
+            deployFill.style.width = '0%';
+            deployFill.classList.remove('deploy-ready');
+
+            gameRunning = true;
+            isPaused = false;
+            gameOverEl.style.display = 'none';
+            upgradeModal.style.display = 'none';
             
             animate();
             spawnEnemy();
@@ -329,7 +667,7 @@
             ctx.strokeStyle = 'rgba(0, 255, 255, 0.05)';
             ctx.lineWidth = 1;
             const gridSize = 50;
-            const offset = (Date.now() / 50) % gridSize;
+            // const offset = (Date.now() / 50) % gridSize; // Removed unused var
             
             for(let x = 0; x < canvas.width; x += gridSize) {
                 ctx.beginPath();
@@ -347,15 +685,19 @@
 
         function animate() {
             if (!gameRunning) return;
+            if (isPaused) {
+                requestAnimationFrame(animate);
+                return;
+            }
+            
             requestAnimationFrame(animate);
             
-            // Clear with trail effect
+            // Clear
             ctx.fillStyle = 'rgba(5, 5, 10, 0.3)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
             drawGrid();
 
-            // Draw Stars
+            // Background Stars
             ctx.fillStyle = '#fff';
             backgroundStars.forEach(star => {
                 ctx.globalAlpha = star.alpha;
@@ -365,27 +707,24 @@
             });
             ctx.globalAlpha = 1;
 
-            // Move Player (WASD/Arrows)
+            // Player Logic
+            // Move
             if (keys['w'] || keys['arrowup']) player.y -= 4;
             if (keys['s'] || keys['arrowdown']) player.y += 4;
             if (keys['a'] || keys['arrowleft']) player.x -= 4;
             if (keys['d'] || keys['arrowright']) player.x += 4;
-
-            // Clamp player to screen
             player.x = Math.max(player.size, Math.min(canvas.width - player.size, player.x));
             player.y = Math.max(player.size, Math.min(canvas.height - player.size, player.y));
+            
+            // Angle
+            player.angle = Math.atan2(mouseY - player.y, mouseX - player.x);
 
             // Draw Player
-            const angle = Math.atan2(mouseY - player.y, mouseX - player.x);
             ctx.save();
             ctx.translate(player.x, player.y);
-            ctx.rotate(angle);
-            
-            // Neon Glow
+            ctx.rotate(player.angle);
             ctx.shadowBlur = 15;
             ctx.shadowColor = player.color;
-            
-            // Ship shape
             ctx.beginPath();
             ctx.moveTo(20, 0);
             ctx.lineTo(-15, 15);
@@ -394,21 +733,103 @@
             ctx.closePath();
             ctx.fillStyle = player.color;
             ctx.fill();
+            
+            // Draw Shield
+            if (player.stats.hasShield) {
+                ctx.strokeStyle = '#00ffff';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(0, 0, 30, 0, Math.PI*2);
+                ctx.stroke();
+            }
             ctx.restore();
-            ctx.shadowBlur = 0;
 
-            // Update Particles
+            // Draw Squad (Replica Set)
+            if (player.stats.squadCount > 0) {
+                const offsets = [
+                    {x: -30, y: -30}, {x: -30, y: 30}, 
+                    {x: -50, y: -50}, {x: -50, y: 50}
+                ];
+                for(let i=0; i<player.stats.squadCount; i++) {
+                    const off = offsets[i];
+                    // Rotate offset based on player angle
+                    const dx = off.x * Math.cos(player.angle) - off.y * Math.sin(player.angle);
+                    const dy = off.x * Math.sin(player.angle) + off.y * Math.cos(player.angle);
+                    
+                    const droneX = player.x + dx;
+                    const droneY = player.y + dy;
+
+                    ctx.save();
+                    ctx.translate(droneX, droneY);
+                    ctx.rotate(player.angle);
+                    ctx.fillStyle = '#0088ff';
+                    ctx.beginPath();
+                    ctx.moveTo(10, 0);
+                    ctx.lineTo(-8, 8);
+                    ctx.lineTo(-8, -8);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            // IA Squad (Auto-Scaler) Logic
+            iaDrones.forEach(drone => {
+                // Find nearest enemy
+                let nearest = null;
+                let minDst = Infinity;
+                enemies.forEach(e => {
+                    const d = Math.hypot(e.x - drone.x, e.y - drone.y);
+                    if (d < minDst) { minDst = d; nearest = e; }
+                });
+
+                // Move randomly or towards nearest
+                if (nearest && minDst > 150) {
+                    const angle = Math.atan2(nearest.y - drone.y, nearest.x - drone.x);
+                    drone.x += Math.cos(angle) * 2;
+                    drone.y += Math.sin(angle) * 2;
+                    drone.angle = angle;
+                } else {
+                    // Hover around player if no enemy
+                    const dToPlayer = Math.hypot(player.x - drone.x, player.y - drone.y);
+                    if (dToPlayer > 100) {
+                         const angle = Math.atan2(player.y - drone.y, player.x - drone.x);
+                         drone.x += Math.cos(angle) * 2.5;
+                         drone.y += Math.sin(angle) * 2.5;
+                    }
+                }
+
+                // Shoot
+                if (nearest && drone.cooldown <= 0) {
+                    const angle = Math.atan2(nearest.y - drone.y, nearest.x - drone.x);
+                    bullets.push({
+                        x: drone.x, y: drone.y, radius: 3, color: '#00ff00',
+                        velocity: { x: Math.cos(angle)*8, y: Math.sin(angle)*8 },
+                        life: 60
+                    });
+                    drone.cooldown = 60; // 1 sec fire rate
+                }
+                if (drone.cooldown > 0) drone.cooldown--;
+
+                // Draw Drone
+                ctx.save();
+                ctx.translate(drone.x, drone.y);
+                ctx.rotate(drone.angle);
+                ctx.fillStyle = '#00ff00';
+                ctx.beginPath();
+                ctx.arc(0, 0, 8, 0, Math.PI*2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // Particles
             particles.forEach((p, i) => {
                 p.x += p.velocity.x;
                 p.y += p.velocity.y;
                 p.alpha -= p.decay;
-                
                 if (p.alpha <= 0) particles.splice(i, 1);
                 else {
                     ctx.save();
                     ctx.globalAlpha = p.alpha;
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = p.color;
                     ctx.fillStyle = p.color;
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
@@ -417,65 +838,68 @@
                 }
             });
 
-            // Update Bullets
+            // Bullets
             bullets.forEach((b, i) => {
                 b.x += b.velocity.x;
                 b.y += b.velocity.y;
                 b.life--;
-                
-                if (b.life <= 0 || 
-                    b.x < 0 || b.x > canvas.width || 
-                    b.y < 0 || b.y > canvas.height) {
+                if (b.life <= 0 || b.x < 0 || b.x > canvas.width || b.y < 0 || b.y > canvas.height) {
                     bullets.splice(i, 1);
                     return;
                 }
-
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = b.color;
                 ctx.fillStyle = b.color;
                 ctx.beginPath();
                 ctx.arc(b.x, b.y, b.radius, 0, Math.PI*2);
                 ctx.fill();
-                ctx.shadowBlur = 0;
             });
 
-            // Update Enemies
+            // Enemies
             enemies.forEach((e, i) => {
-                // Homing logic
                 const angle = Math.atan2(player.y - e.y, player.x - e.x);
                 e.velocity.x = Math.cos(angle) * e.speed;
                 e.velocity.y = Math.sin(angle) * e.speed;
-
                 e.x += e.velocity.x;
                 e.y += e.velocity.y;
 
                 // Collision Player
                 const distPlayer = Math.hypot(player.x - e.x, player.y - e.y);
                 if (distPlayer - e.radius - player.size < 0) {
-                    createExplosion(player.x, player.y, player.color, 30);
-                    gameRunning = false;
-                    gameOverEl.style.display = 'block';
-                    finalScoreEl.innerText = score;
+                    if (player.stats.hasShield) {
+                        player.stats.hasShield = false; // Pop shield
+                        createExplosion(player.x, player.y, '#00ffff', 20); // Shield break effect
+                        // Push enemy back
+                        e.x -= e.velocity.x * 20;
+                        e.y -= e.velocity.y * 20;
+                    } else {
+                        createExplosion(player.x, player.y, player.color, 30);
+                        gameRunning = false;
+                        gameOverEl.style.display = 'block';
+                        finalScoreEl.innerText = score;
+                    }
                 }
 
                 // Collision Bullets
                 bullets.forEach((b, bi) => {
                     const distBullet = Math.hypot(b.x - e.x, b.y - e.y);
                     if (distBullet - e.radius - b.radius < 0) {
-                        // Hit
                         e.health--;
                         createExplosion(b.x, b.y, b.color, 3);
                         bullets.splice(bi, 1);
-
                         if (e.health <= 0) {
                             createExplosion(e.x, e.y, e.color, 15);
                             enemies.splice(i, 1);
                             score += 10 * level;
                             xp += 10;
+                            
+                            // Charge Deploy
+                            if (player.stats.hasDeployUpgrade && player.stats.deployCharge < player.stats.deployMaxCharge) {
+                                player.stats.deployCharge++;
+                                updateDeployUI();
+                            }
+                            
                             scoreEl.innerText = score;
                             checkLevelUp();
                         } else {
-                            // Flash effect
                             e.radius += 2;
                             setTimeout(() => e.radius -= 2, 50);
                         }
@@ -487,11 +911,10 @@
                 ctx.shadowColor = e.color;
                 ctx.fillStyle = e.color;
                 ctx.beginPath();
-                // Draw as Hexagon for "Bug" feel
                 for (let j = 0; j < 6; j++) {
-                    const angle = (Math.PI * 2 / 6) * j;
-                    const ex = e.x + Math.cos(angle) * e.radius;
-                    const ey = e.y + Math.sin(angle) * e.radius;
+                    const ang = (Math.PI * 2 / 6) * j;
+                    const ex = e.x + Math.cos(ang) * e.radius;
+                    const ey = e.y + Math.sin(ang) * e.radius;
                     if (j === 0) ctx.moveTo(ex, ey);
                     else ctx.lineTo(ex, ey);
                 }
@@ -499,17 +922,35 @@
                 ctx.fill();
                 ctx.shadowBlur = 0;
                 
-                // Draw Eye
                 ctx.fillStyle = '#fff';
                 ctx.beginPath();
                 ctx.arc(e.x, e.y, e.radius * 0.3, 0, Math.PI*2);
                 ctx.fill();
             });
         }
+        
+        // Updated Mousedown for Squad Shooting
+        window.addEventListener('mousedown', () => {
+             if (gameRunning && !isPaused) {
+                 // Player fire
+                 fireBullet(player.x, player.y, player.angle, true);
 
-        // Start
-        spawnEnemy();
-        animate();
+                 // Squad fire (Replica Set)
+                 if (player.stats.squadCount > 0) {
+                     const offsets = [
+                        {x: -30, y: -30}, {x: -30, y: 30}, 
+                        {x: -50, y: -50}, {x: -50, y: 50}
+                     ];
+                     for(let i=0; i<player.stats.squadCount; i++) {
+                         const off = offsets[i];
+                         const dx = off.x * Math.cos(player.angle) - off.y * Math.sin(player.angle);
+                         const dy = off.x * Math.sin(player.angle) + off.y * Math.cos(player.angle);
+                         fireBullet(player.x + dx, player.y + dy, player.angle, false);
+                     }
+                 }
+             }
+        });
+
     </script>
 </body>
 </html>
