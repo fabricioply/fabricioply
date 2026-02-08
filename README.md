@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Fix the cause, not the symptom. - Steve Maguire
+> 💡 **Daily Wisdom:** While there is code, there is a bug.
 <!-- END_SECTION:quote -->
 
 ---
