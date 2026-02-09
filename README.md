@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** While there is code, there is a bug.
+> 💡 **Daily Wisdom:** Java is to JavaScript what car is to Carpet. - Chris Heilmann
 <!-- END_SECTION:quote -->
 
 ---
