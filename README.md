@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Knowledge is power. - Francis Bacon
+> 💡 **Daily Wisdom:** Simplicity is the soul of efficiency. - Austin Freeman
 <!-- END_SECTION:quote -->
 
 ---
