@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Programs must be written for people to read, and only incidentally for machines to execute. - Harold Abelson
+> 💡 **Daily Wisdom:** Truth can only be found in one place: the code. - Robert C. Martin
 <!-- END_SECTION:quote -->
 
 ---
