@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** It works on my machine!
+> 💡 **Daily Wisdom:** Talk is cheap. Show me the code. - Linus Torvalds
 <!-- END_SECTION:quote -->
 
 ---
