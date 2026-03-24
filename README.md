@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Talk is cheap. Show me the code. - Linus Torvalds
+> 💡 **Daily Wisdom:** Code is like humor. When you have to explain it, it’s bad. - Cory House
 <!-- END_SECTION:quote -->
 
 ---
