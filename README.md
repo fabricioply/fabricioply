@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** First, solve the problem. Then, write the code. - John Johnson
+> 💡 **Daily Wisdom:** It works on my machine!
 <!-- END_SECTION:quote -->
 
 ---
