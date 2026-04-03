@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Python is the new Excel.
+> 💡 **Daily Wisdom:** First, solve the problem. Then, write the code. - John Johnson
 <!-- END_SECTION:quote -->
 
 ---
