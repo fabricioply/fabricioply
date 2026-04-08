@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Code is like humor. When you have to explain it, it’s bad. - Cory House
+> 💡 **Daily Wisdom:** Programs must be written for people to read, and only incidentally for machines to execute. - Harold Abelson
 <!-- END_SECTION:quote -->
 
 ---
