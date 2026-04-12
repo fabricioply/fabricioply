@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Simplicity is the soul of efficiency. - Austin Freeman
+> 💡 **Daily Wisdom:** Make it work, make it right, make it fast. - Kent Beck
 <!-- END_SECTION:quote -->
 
 ---
