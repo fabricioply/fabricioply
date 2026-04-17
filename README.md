@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Experience is the name everyone gives to their mistakes. - Oscar Wilde
+> 💡 **Daily Wisdom:** Fix the cause, not the symptom. - Steve Maguire
 <!-- END_SECTION:quote -->
 
 ---
