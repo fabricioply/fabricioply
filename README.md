@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** First, solve the problem. Then, write the code. - John Johnson
+> 💡 **Daily Wisdom:** Java is to JavaScript what car is to Carpet. - Chris Heilmann
 <!-- END_SECTION:quote -->
 
 ---
