@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Python is the new Excel.
+> 💡 **Daily Wisdom:** Fix the cause, not the symptom. - Steve Maguire
 <!-- END_SECTION:quote -->
 
 ---
