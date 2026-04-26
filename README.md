@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Truth can only be found in one place: the code. - Robert C. Martin
+> 💡 **Daily Wisdom:** While there is code, there is a bug.
 <!-- END_SECTION:quote -->
 
 ---
