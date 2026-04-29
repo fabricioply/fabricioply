@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Java is to JavaScript what car is to Carpet. - Chris Heilmann
+> 💡 **Daily Wisdom:** Code is like humor. When you have to explain it, it’s bad. - Cory House
 <!-- END_SECTION:quote -->
 
 ---
