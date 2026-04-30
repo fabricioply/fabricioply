@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Code is like humor. When you have to explain it, it’s bad. - Cory House
+> 💡 **Daily Wisdom:** One man's crappy software is another man's full time job. - Jessica Gaston
 <!-- END_SECTION:quote -->
 
 ---
