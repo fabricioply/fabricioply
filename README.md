@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** One man's crappy software is another man's full time job. - Jessica Gaston
+> 💡 **Daily Wisdom:** Programs must be written for people to read, and only incidentally for machines to execute. - Harold Abelson
 <!-- END_SECTION:quote -->
 
 ---
