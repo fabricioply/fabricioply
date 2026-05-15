@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Make it work, make it right, make it fast. - Kent Beck
+> 💡 **Daily Wisdom:** First, solve the problem. Then, write the code. - John Johnson
 <!-- END_SECTION:quote -->
 
 ---
