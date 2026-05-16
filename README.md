@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** First, solve the problem. Then, write the code. - John Johnson
+> 💡 **Daily Wisdom:** Truth can only be found in one place: the code. - Robert C. Martin
 <!-- END_SECTION:quote -->
 
 ---
