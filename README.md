@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Experience is the name everyone gives to their mistakes. - Oscar Wilde
+> 💡 **Daily Wisdom:** It works on my machine!
 <!-- END_SECTION:quote -->
 
 ---
