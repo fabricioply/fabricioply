@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Python is the new Excel.
+> 💡 **Daily Wisdom:** Talk is cheap. Show me the code. - Linus Torvalds
 <!-- END_SECTION:quote -->
 
 ---
