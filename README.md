@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** One man's crappy software is another man's full time job. - Jessica Gaston
+> 💡 **Daily Wisdom:** Talk is cheap. Show me the code. - Linus Torvalds
 <!-- END_SECTION:quote -->
 
 ---
