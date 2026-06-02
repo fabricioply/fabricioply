@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Talk is cheap. Show me the code. - Linus Torvalds
+> 💡 **Daily Wisdom:** Simplicity is the soul of efficiency. - Austin Freeman
 <!-- END_SECTION:quote -->
 
 ---
