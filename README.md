@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** While there is code, there is a bug.
+> 💡 **Daily Wisdom:** First, solve the problem. Then, write the code. - John Johnson
 <!-- END_SECTION:quote -->
 
 ---
