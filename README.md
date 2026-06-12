@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Fix the cause, not the symptom. - Steve Maguire
+> 💡 **Daily Wisdom:** One man's crappy software is another man's full time job. - Jessica Gaston
 <!-- END_SECTION:quote -->
 
 ---
