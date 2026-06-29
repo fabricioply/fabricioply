@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Java is to JavaScript what car is to Carpet. - Chris Heilmann
+> 💡 **Daily Wisdom:** Truth can only be found in one place: the code. - Robert C. Martin
 <!-- END_SECTION:quote -->
 
 ---
