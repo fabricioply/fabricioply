@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** It works on my machine!
+> 💡 **Daily Wisdom:** One man's crappy software is another man's full time job. - Jessica Gaston
 <!-- END_SECTION:quote -->
 
 ---
