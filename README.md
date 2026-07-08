@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** First, solve the problem. Then, write the code. - John Johnson
+> 💡 **Daily Wisdom:** Simplicity is the soul of efficiency. - Austin Freeman
 <!-- END_SECTION:quote -->
 
 ---
