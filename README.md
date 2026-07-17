@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Make it work, make it right, make it fast. - Kent Beck
+> 💡 **Daily Wisdom:** Truth can only be found in one place: the code. - Robert C. Martin
 <!-- END_SECTION:quote -->
 
 ---
