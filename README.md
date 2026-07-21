@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Code is like humor. When you have to explain it, it’s bad. - Cory House
+> 💡 **Daily Wisdom:** Fix the cause, not the symptom. - Steve Maguire
 <!-- END_SECTION:quote -->
 
 ---
