@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** While there is code, there is a bug.
+> 💡 **Daily Wisdom:** Knowledge is power. - Francis Bacon
 <!-- END_SECTION:quote -->
 
 ---
