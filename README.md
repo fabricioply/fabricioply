@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Talk is cheap. Show me the code. - Linus Torvalds
+> 💡 **Daily Wisdom:** First, solve the problem. Then, write the code. - John Johnson
 <!-- END_SECTION:quote -->
 
 ---
