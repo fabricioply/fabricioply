@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Python is the new Excel.
+> 💡 **Daily Wisdom:** Simplicity is the soul of efficiency. - Austin Freeman
 <!-- END_SECTION:quote -->
 
 ---
