@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Programs must be written for people to read, and only incidentally for machines to execute. - Harold Abelson
+> 💡 **Daily Wisdom:** Java is to JavaScript what car is to Carpet. - Chris Heilmann
 <!-- END_SECTION:quote -->
 
 ---
