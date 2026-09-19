@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Java is to JavaScript what car is to Carpet. - Chris Heilmann
+> 💡 **Daily Wisdom:** Python is the new Excel.
 <!-- END_SECTION:quote -->
 
 ---
