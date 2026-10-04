@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Java is to JavaScript what car is to Carpet. - Chris Heilmann
+> 💡 **Daily Wisdom:** Simplicity is the soul of efficiency. - Austin Freeman
 <!-- END_SECTION:quote -->
 
 ---
