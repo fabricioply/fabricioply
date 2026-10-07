@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Talk is cheap. Show me the code. - Linus Torvalds
+> 💡 **Daily Wisdom:** Experience is the name everyone gives to their mistakes. - Oscar Wilde
 <!-- END_SECTION:quote -->
 
 ---
