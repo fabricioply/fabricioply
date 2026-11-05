@@ -48,7 +48,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Java is to JavaScript what car is to Carpet. - Chris Heilmann
+> 💡 **Daily Wisdom:** It works on my machine!
 <!-- END_SECTION:quote -->
 
 ---
