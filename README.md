@@ -1,5 +1,5 @@
 # Hi there, I'm Fabricio 👋
-## 👾 Python Developer | Web & Mobile Creator | Vexel GameOps Creator
+## 👾 Web & Mobile Developer | Swipie Creator
 
 <div align="center">
     <a href="https://fabricioply.github.io/fabricioply/">
@@ -28,8 +28,6 @@ My main development tools:
 ### � Featured Projects
 
 #### 🎮 [Vexel.work](https://vexel.work)
-> **GameOps Platform**
-> Um site para GameOps que ajuda no desenvolvimento de jogos, contendo diversas formas de organizar tarefas, concept arts, modelos 3D, história, votações e muito mais!
 
 #### 🍿 [Swipie](https://swipie.com.br)
 > **Movie Matcher Party**
