@@ -46,7 +46,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Fix the cause, not the symptom. - Steve Maguire
+> 💡 **Daily Wisdom:** Java is to JavaScript what car is to Carpet. - Chris Heilmann
 <!-- END_SECTION:quote -->
 
 ---
