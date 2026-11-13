@@ -46,7 +46,7 @@ My main development tools:
 ---
 
 <!-- START_SECTION:quote -->
-> 💡 **Daily Wisdom:** Fix the cause, not the symptom. - Steve Maguire
+> 💡 **Daily Wisdom:** Knowledge is power. - Francis Bacon
 <!-- END_SECTION:quote -->
 
 ---
